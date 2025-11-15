@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JTBD Carousel - LinkedIn Post</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .carousel-wrapper {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 700px;
+            display: none;
+            padding: 80px 60px;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        /* Slide 1 Styles */
+        .slide-1 {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .slide-1 h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 40px;
+            color: #1a1a1a;
+        }
+
+        .slide-1 .subtitle {
+            font-size: 2rem;
+            color: #666;
+            margin-top: 60px;
+        }
+
+        /* Slide 2 Styles */
+        .slide-2 {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-2 .header {
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            font-size: 0.75rem;
+            color: #999;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .slide-2 .template-line {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin: 30px 0;
+            text-align: center;
+            color: #1a1a1a;
+        }
+
+        .slide-2 .placeholder {
+            color: #999;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .slide-2 .divider {
+            width: 200px;
+            height: 2px;
+            background: #e0e0e0;
+            margin: 60px auto 40px;
+        }
+
+        .slide-2 .tagline {
+            font-size: 1.5rem;
+            color: #666;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        /* Slide 3 Styles */
+        .slide-3 {
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .example-box {
+            padding: 40px;
+            border-radius: 8px;
+            border-left: 4px solid;
+            margin: 20px 0;
+        }
+
+        .example-box.before {
+            background: linear-gradient(to right, #fff5f5, #ffeded);
+            border-left-color: #f56565;
+        }
+
+        .example-box.after {
+            background: linear-gradient(to right, #f0fdf4, #dcfce7);
+            border-left-color: #10b981;
+        }
+
+        .example-label {
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .before .example-label {
+            color: #dc2626;
+        }
+
+        .after .example-label {
+            color: #059669;
+        }
+
+        .example-text {
+            font-size: 1.8rem;
+            color: #1a1a1a;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .example-box.before .example-text {
+            font-size: 2rem;
+            font-weight: 500;
+        }
+
+        .benefits {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .benefit-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 60px;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 10px 20px;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            color: #1a1a1a;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .dots {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            width: 32px;
+            border-radius: 4px;
+            background: #1a1a1a;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            font-size: 0.875rem;
+            color: #999;
+            font-family: 'Courier New', monospace;
+        }
+
+        .instructions {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide {
+                height: 600px;
+                padding: 40px 30px;
+            }
+
+            .slide-1 h1 {
+                font-size: 2rem;
+            }
+
+            .slide-2 .template-line {
+                font-size: 1.5rem;
+            }
+
+            .example-text {
+                font-size: 1.2rem;
+            }
+
+            .nav-buttons {
+                padding: 0 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="carousel-wrapper">
+            <!-- Slide 1: The Hook -->
+            <div class="slide slide-1 active">
+                <h1>Stop building what users ask for.</h1>
+                <h1>Start building what they actually need.</h1>
+                <div class="subtitle">The JTBD Framework →</div>
+            </div>
+
+            <!-- Slide 2: The Template -->
+            <div class="slide slide-2">
+                <div class="header">THE TEMPLATE</div>
+                <div class="template-line">
+                    When I <span class="placeholder">[situation]</span>
+                </div>
+                <div class="template-line">
+                    I want to <span class="placeholder">[motivation]</span>
+                </div>
+                <div class="template-line">
+                    So I can <span class="placeholder">[expected outcome]</span>
+                </div>
+                <div class="divider"></div>
+                <div class="tagline">
+                    Stop building what users ask for.<br>
+                    Start building what they need.
+                </div>
+            </div>
+
+            <!-- Slide 3: The Example -->
+            <div class="slide slide-3">
+                <div class="example-box before">
+                    <div class="example-label">❌ Traditional</div>
+                    <div class="example-text">"Add search filters"</div>
+                </div>
+
+                <div class="example-box after">
+                    <div class="example-label">✅ Jobs To Be Done</div>
+                    <div class="example-text">
+                        "When I'm browsing hundreds of products, I want to narrow results by specific criteria, 
+                        so I can find exactly what I need without scrolling endlessly"
+                    </div>
+                    <div class="benefits">
+                        <div class="benefit-item">
+                            <div class="benefit-dot"></div>
+                            <span>Context: browsing hundreds of products</span>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-dot"></div>
+                            <span>Motivation: narrow by criteria</span>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-dot"></div>
+                            <span>Outcome: find without scrolling</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-buttons">
+                <button class="nav-btn prev-btn" onclick="prevSlide()">← Previous</button>
+                <button class="nav-btn next-btn" onclick="nextSlide()">Next →</button>
+            </div>
+
+            <!-- Dots -->
+            <div class="dots">
+                <div class="dot active" onclick="goToSlide(0)"></div>
+                <div class="dot" onclick="goToSlide(1)"></div>
+                <div class="dot" onclick="goToSlide(2)"></div>
+            </div>
+
+            <!-- Counter -->
+            <div class="slide-counter">01 / 03</div>
+        </div>
+
+        <div class="instructions">
+            Use ← → arrow keys or click buttons to navigate • Right-click each slide to save as image
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const counter = document.querySelector('.slide-counter');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+
+        function updateSlide() {
+            // Update slides
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+
+            // Update dots
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+
+            // Update counter
+            counter.textContent = `${String(currentSlide + 1).padStart(2, '0')} / 03`;
+
+            // Update buttons
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Initialize
+        updateSlide();
+    </script>
+</body>
+</html>
